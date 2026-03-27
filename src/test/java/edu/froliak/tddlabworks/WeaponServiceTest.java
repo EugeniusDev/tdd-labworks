@@ -38,11 +38,22 @@ class WeaponServiceTest {
 
     @BeforeEach
     void setUp() {
+        underTest.deleteAll();
+        List<Weapon> testWeapons = new ArrayList<>();
+        for (int i = 1; i <= 30; i++) {
+            testWeapons.add(new Weapon(
+                    "Weapon Name " + i,
+                    "CODE_" + i,
+                    "Description for weapon " + i
+            ));
+        }
+
+        underTest.createAll(testWeapons);
     }
+
     @AfterEach
     void tearsDown(){
     }
-
 
     @Test
     void whenGetAllItemsListThenSizeIs30() {
