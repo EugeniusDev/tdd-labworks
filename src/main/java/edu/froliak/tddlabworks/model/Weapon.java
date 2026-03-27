@@ -3,7 +3,7 @@ package edu.froliak.tddlabworks.model;
 /*
   @author eugen
   @project tdd-labworks
-  @class Item
+  @class Weapon
   @version 1.0.0
   @since 3/27/2026 - 10.51
 */
@@ -21,14 +21,14 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @ToString
 @Builder
 @Document
-public class Item extends AuditMetadata {
+public class Weapon extends AuditMetadata {
     @Id
     private String id;
     private String name;
     private String code;
     private String description;
 
-    public Item(String name, String code, String description) {
+    public Weapon(String name, String code, String description) {
         this.name = name;
         this.code = code;
         this.description = description;
@@ -39,8 +39,8 @@ public class Item extends AuditMetadata {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Item item = (Item) o;
-        return getId().equals(item.getId());
+        Weapon weapon = (Weapon) o;
+        return getId().equals(weapon.getId());
     }
 
     @Override

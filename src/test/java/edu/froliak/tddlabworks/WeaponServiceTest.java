@@ -8,10 +8,10 @@ package edu.froliak.tddlabworks;
   @since 3/27/2026 - 11.02
 */
 
-import edu.froliak.tddlabworks.model.Item;
+import edu.froliak.tddlabworks.model.Weapon;
 import edu.froliak.tddlabworks.response.ApiResponse;
 import edu.froliak.tddlabworks.response.BaseMetaData;
-import edu.froliak.tddlabworks.service.ItemService;
+import edu.froliak.tddlabworks.service.WeaponService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,13 +24,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ItemServiceTest {
+class WeaponServiceTest {
 
 
     @Autowired
-    private ItemService underTest;
+    private WeaponService underTest;
 
-    List<Item> items = new ArrayList<>();
+    List<Weapon> weapons = new ArrayList<>();
 
     @BeforeAll
     static void beforeAll() {
@@ -55,8 +55,8 @@ class ItemServiceTest {
         // given
         String id = "69aeefcbe5c3dbd26376b0a8";
         // when
-        Item item = underTest.getById(id);
-        ApiResponse<BaseMetaData, Item> response = underTest.getByIdAsApiResponse(id);
+        Weapon weapon = underTest.getById(id);
+        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse(id);
         //then
         assertNotNull(response);
         assertFalse(response.getData().isEmpty());
@@ -64,7 +64,7 @@ class ItemServiceTest {
         assertTrue(response.getMeta().isSuccess());
         assertEquals(200, response.getMeta().getCode());
         assertNull(response.getMeta().getErrorMessage());
-        assertEquals(item, response.getData().get(0));
+        assertEquals(weapon, response.getData().get(0));
     }
 
     @Test
@@ -72,8 +72,8 @@ class ItemServiceTest {
         // given
         String id = "69aeefcbe5c3d";
         // when
-        Item item = underTest.getById(id);
-        ApiResponse<BaseMetaData, Item> response = underTest.getByIdAsApiResponse(id);
+        Weapon weapon = underTest.getById(id);
+        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse(id);
         //then
         assertNotNull(response);
         assertTrue(response.getData().isEmpty());
