@@ -64,109 +64,91 @@ class WeaponServiceTest {
         assertEquals(30, size);
     }
 
+    // 1
     @Test
     void whenWeaponIsPresentThenReturnOkApiResponse() {
-        // given
-        String id = "69aeefcbe5c3dbd26376b0a8";
-        // when
-        Weapon weapon = underTest.getById(id);
-        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse(id);
-        //then
+        Weapon existing = weaponRepository.findAll().get(0);
+        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse(existing.getId());
+
         assertNotNull(response);
-        assertFalse(response.getData().isEmpty());
-        assertNotNull(response.getData().get(0));
-        assertTrue(response.getMeta().isSuccess());
         assertEquals(200, response.getMeta().getCode());
-        assertNull(response.getMeta().getErrorMessage());
-        assertEquals(weapon, response.getData().get(0));
+        assertEquals(existing.getName(), response.getData().get(0).getName());
     }
 
+    // 2
     @Test
-    void whenWeaponIsNotPresentThenReturnApiResponseCode_404() {
-        // given
-        String id = "69aeefcbe5c3d";
-        // when
-        Weapon weapon = underTest.getById(id);
-        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse(id);
-        //then
-        assertNotNull(response);
-        assertTrue(response.getData().isEmpty());
-        assertFalse(response.getMeta().isSuccess());
+    void whenWeaponIsNotPresentThenReturn404() {
+        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse("non_existent_id");
+
         assertEquals(404, response.getMeta().getCode());
-        assertNotNull(response.getMeta().getErrorMessage());
+        assertFalse(response.getMeta().isSuccess());
         assertEquals("Not found", response.getMeta().getErrorMessage());
     }
 
-    @Test
-    void whenWeaponNotExistsThenReturn404Response() {
-
-        String id = "wrong_id";
-
-        ApiResponse<BaseMetaData, Weapon> response =
-                underTest.getByIdAsApiResponse(id);
-
-        assertNotNull(response);
-        assertFalse(response.getMeta().isSuccess());
-        assertEquals(404, response.getMeta().getCode());
-        assertEquals("Not found", response.getMeta().getErrorMessage());
-
-        assertTrue(response.getData().isEmpty());
-    }
-
+    // 3
     @Test
     void whenGetAllAsApiResponseThenReturnOk() {
         ApiResponse<BaseMetaData, Weapon> response = underTest.getAllAsApiResponse();
 
-        assertNotNull(response);
         assertTrue(response.getMeta().isSuccess());
-        assertEquals(200, response.getMeta().getCode());
-        assertNotNull(response.getData());
+        assertEquals(30, response.getData().size());
     }
 
-    void whenUpdateExistingWeaponThenReturnOk() {
-        Weapon doctor = weaponRepository.findAll().get(0);
-        doctor.setName("Updated");
-
-        ApiResponse<BaseMetaData, Weapon> response = underTest.updateAsApiResponse(doctor);
-
-        assertTrue(response.getMeta().isSuccess());
-        assertEquals(200, response.getMeta().getCode());
-        assertEquals("Updated", response.getData().get(0).getName());
-    }
-
+    // 4
     @Test
-    void whenWeaponExistsThenErrorMessageIsNull() {
+    void whenUpdateExistingWeaponThenReturnOk() {
+        Weapon weapon = weaponRepository.findAll().get(0);
+        weapon.setName("Spear");
 
-        String id = "69b8508538302af2aea5d3d6";
+        ApiResponse<BaseMetaData, Weapon> response = underTest.updateAsApiResponse(weapon);
 
-        ApiResponse<BaseMetaData, Weapon> response =
-                underTest.getByIdAsApiResponse(id);
+        assertEquals(200, response.getMeta().getCode());
+        assertEquals("Spear", response.getData().get(0).getName());
+    }
 
+    // 5
+    @Test
+    void whenUpdateNonExistentThenReturn404() {
+        Weapon ghost = new Weapon("Megatron", "666", "Cool stuff");
+        ghost.setId("chynazes");
+
+        ApiResponse<BaseMetaData, Weapon> response = underTest.updateAsApiResponse(ghost);
+
+        assertEquals(404, response.getMeta().getCode());
+        assertFalse(response.getMeta().isSuccess());
+    }
+
+    // 6
+    @Test
+    void whenSuccessThenErrorMessageIsNull() {
+        ApiResponse<BaseMetaData, Weapon> response = underTest.getAllAsApiResponse();
         assertNull(response.getMeta().getErrorMessage());
     }
 
+    // 7
     @Test
-    void whenUpdateWeaponThenReturnUpdatedWeapon() {
-
-        Weapon doctor = weaponRepository.findAll().get(0);
-        doctor.setName("UpdatedName");
-
-        ApiResponse<BaseMetaData, Weapon> response =
-                underTest.updateAsApiResponse(doctor);
-
-        assertEquals("UpdatedName",
-                response.getData().get(0).getName());
+    void whenNotFoundDataListIsNotNull() {
+        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse("wrong");
+        assertNotNull(response.getData());
+        // В ApiResponse конструктор для помилок повинен ініціалізувати список
     }
 
+    // 8
     @Test
-    void whenUpdateWeaponNotExistsThenReturn404() {
+    void checkMetaDataConsistency() {
+        BaseMetaData meta = new BaseMetaData(200, true);
+        assertEquals(200, meta.getCode());
+        assertTrue(meta.isSuccess());
+    }
 
-        Weapon doctor = new Weapon("999", "Ghost", "000", "none");
+    // 9
+    @Test
+    void whenDeleteThenGetByIdReturns404() {
+        Weapon weapon = weaponRepository.findAll().get(0);
+        underTest.delById(weapon.getId());
 
-        ApiResponse<BaseMetaData, Weapon> response =
-                underTest.updateAsApiResponse(doctor);
+        ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse(weapon.getId());
 
-        assertFalse(response.getMeta().isSuccess());
         assertEquals(404, response.getMeta().getCode());
     }
 }

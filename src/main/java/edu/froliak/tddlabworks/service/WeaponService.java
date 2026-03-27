@@ -102,23 +102,28 @@ public class WeaponService {
         weaponRepository.deleteAll();
     }
 
-    //------------------------- 12 03 response impl ------------------------------
     public ApiResponse<BaseMetaData, Weapon> getByIdAsApiResponse(String id) {
-        Weapon weaponPersisted = weaponRepository.findById(id).orElse(null);
-        BaseMetaData baseMetaData = new BaseMetaData();
-        if (weaponPersisted != null) {
-            ApiResponse<BaseMetaData, Weapon> response = new ApiResponse<>(baseMetaData, weaponPersisted);
-            return response;
+        Weapon weapon = weaponRepository.findById(id).orElse(null);
+        if (weapon != null) {
+            return new ApiResponse<>(new BaseMetaData(200, true), weapon);
         }
-
-        return null;
+        return new ApiResponse<>(new BaseMetaData(404, false, "Not found"));
     }
 
-    public  ApiResponse<BaseMetaData, Weapon> getAllAsApiResponse() {
-        return null;
+    public ApiResponse<BaseMetaData, Weapon> getAllAsApiResponse() {
+        List<Weapon> all = weaponRepository.findAll();
+        BaseMetaData meta = new BaseMetaData(200, true);
+        return ApiResponse.<BaseMetaData, Weapon>builder()
+                .meta(meta)
+                .data(all)
+                .build();
     }
 
-    public  ApiResponse<BaseMetaData, Weapon> updateAsApiResponse(Weapon weapon) {
-        return null;
+    public ApiResponse<BaseMetaData, Weapon> updateAsApiResponse(Weapon weapon) {
+        if (weapon.getId() != null && weaponRepository.existsById(weapon.getId())) {
+            Weapon updated = weaponRepository.save(weapon);
+            return new ApiResponse<>(new BaseMetaData(200, true), updated);
+        }
+        return new ApiResponse<>(new BaseMetaData(404, false, "Not found"));
     }
 }

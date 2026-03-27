@@ -32,5 +32,6 @@ public class ApiResponse<M extends BaseMetaData, D> {
 
     public ApiResponse(M meta) {
         this.meta = meta;
+        this.data = new ArrayList<>();
     }
 }
