@@ -109,10 +109,10 @@ class WeaponServiceTest {
     // 5
     @Test
     void whenUpdateNonExistentThenReturn404() {
-        Weapon ghost = new Weapon("Megatron", "666", "Cool stuff");
-        ghost.setId("chynazes");
+        Weapon wunderwaffe = new Weapon("Megatron", "666", "Cool stuff");
+        wunderwaffe.setId("chynazes");
 
-        ApiResponse<BaseMetaData, Weapon> response = underTest.updateAsApiResponse(ghost);
+        ApiResponse<BaseMetaData, Weapon> response = underTest.updateAsApiResponse(wunderwaffe);
 
         assertEquals(404, response.getMeta().getCode());
         assertFalse(response.getMeta().isSuccess());
@@ -130,7 +130,6 @@ class WeaponServiceTest {
     void whenNotFoundDataListIsNotNull() {
         ApiResponse<BaseMetaData, Weapon> response = underTest.getByIdAsApiResponse("wrong");
         assertNotNull(response.getData());
-        // В ApiResponse конструктор для помилок повинен ініціалізувати список
     }
 
     // 8
