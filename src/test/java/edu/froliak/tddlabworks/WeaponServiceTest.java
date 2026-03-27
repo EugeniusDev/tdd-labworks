@@ -59,7 +59,7 @@ class WeaponServiceTest {
     }
 
     @Test
-    void whenGetAllItemsListThenSizeIs30() {
+    void whenGetAllWeaponsListThenSizeIs30() {
         int size = underTest.getAll().size();
         assertEquals(30, size);
     }
