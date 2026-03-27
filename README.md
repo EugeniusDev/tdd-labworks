@@ -1,1 +1,1 @@
-<img width="1918" height="1022" alt="labwork2-test" src="https://github.com/user-attachments/assets/27201b5e-90f8-4774-924e-967e7e094a18" />
+<img width="1918" height="1021" alt="labwork3-tests" src="https://github.com/user-attachments/assets/09c72482-8a82-4399-9215-6572d2a53bac" />
