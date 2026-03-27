@@ -3,7 +3,7 @@ package edu.froliak.tddlabworks;
 /*
   @author eugen
   @project tdd-labworks
-  @class ItemServiceTest
+  @class WeaponServiceTest
   @version 1.0.0
   @since 3/27/2026 - 11.02
 */
