@@ -9,8 +9,6 @@ package edu.froliak.tddlabworks;
 */
 
 import edu.froliak.tddlabworks.model.Weapon;
-import edu.froliak.tddlabworks.response.ApiResponse;
-import edu.froliak.tddlabworks.response.BaseMetaData;
 import edu.froliak.tddlabworks.service.WeaponService;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +54,7 @@ class WeaponServiceTest {
     }
 
     @Test
-    void whenGetAllItemsListThenSizeIs30() {
+    void whenGetAllWeaponsListThenSizeIs30() {
         int size = underTest.getAll().size();
         assertEquals(30, size);
     }
