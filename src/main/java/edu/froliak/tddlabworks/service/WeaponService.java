@@ -17,12 +17,14 @@ import edu.froliak.tddlabworks.response.ApiResponse;
 import edu.froliak.tddlabworks.response.BaseMetaData;
 import edu.froliak.tddlabworks.response.PaginationMetaData;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.*;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class WeaponService {
