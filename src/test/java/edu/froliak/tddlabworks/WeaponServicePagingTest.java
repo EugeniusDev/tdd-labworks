@@ -15,8 +15,11 @@ import edu.froliak.tddlabworks.response.ApiResponse;
 import edu.froliak.tddlabworks.response.PaginationMetaData;
 import edu.froliak.tddlabworks.service.WeaponService;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
@@ -255,5 +258,53 @@ class WeaponServicePagingTest {
         assertTrue(response.getMeta().isLast());
 
         assertEquals(1, response.getData().size());
+    }
+
+    @Test
+    void whenRequestIsIncorrectThenGiveTheLastPage() {
+        // given
+        WeaponPageRequest request = new WeaponPageRequest(9, 4);
+
+        List<Weapon> allSorted = weaponRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "id"));
+        String expectedLastItemId = allSorted.get(29).getId();
+
+        // when
+        ApiResponse<PaginationMetaData, Weapon> response = underTest.getWeaponsPage(request);
+
+        // then
+        assertNotNull(response);
+        assertNotNull(response.getMeta());
+
+        assertEquals(404, response.getMeta().getCode());
+        assertFalse(response.getMeta().isSuccess());
+        assertNotNull(response.getMeta().getErrorMessage());
+        assertTrue(response.getMeta().getErrorMessage()
+                .contains("Maximal page for the size is " + response.getMeta().getTotalPages()));
+
+        assertEquals(7, response.getMeta().getNumber());
+        assertEquals(4, response.getMeta().getSize());
+        assertEquals(30, response.getMeta().getTotalElements());
+        assertEquals(8, response.getMeta().getTotalPages());
+        assertFalse(response.getMeta().isFirst());
+        assertTrue(response.getMeta().isLast());
+
+        assertNotNull(response.getData());
+        assertFalse(response.getData().isEmpty());
+        assertEquals(2, response.getData().size());
+
+        assertEquals(expectedLastItemId, response.getData().get(1).getId());
+    }
+
+    @ExtendWith(OutputCaptureExtension.class)
+    @Test
+    void testLoggingWhenOutOfRange(CapturedOutput output) {
+        // given
+        WeaponPageRequest request = new WeaponPageRequest(9, 4);
+
+        // when
+        underTest.getWeaponsPage(request);
+
+        // then
+        assertTrue(output.toString().contains("Out of range"));
     }
 }

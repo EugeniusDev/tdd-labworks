@@ -10,7 +10,10 @@ package edu.froliak.tddlabworks.controller;
 
 import edu.froliak.tddlabworks.model.Weapon;
 import edu.froliak.tddlabworks.request.WeaponCreateRequest;
+import edu.froliak.tddlabworks.request.WeaponPageRequest;
 import edu.froliak.tddlabworks.request.WeaponUpdateRequest;
+import edu.froliak.tddlabworks.response.ApiResponse;
+import edu.froliak.tddlabworks.response.PaginationMetaData;
 import edu.froliak.tddlabworks.service.WeaponService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -62,5 +65,10 @@ public class WeaponRestController {
     @DeleteMapping("{id}")
     public void delete(@PathVariable String id) {
         weaponService.delById(id);
+    }
+
+    @PostMapping("/page")
+    public ApiResponse<PaginationMetaData, Weapon> getItemsPage(@RequestBody WeaponPageRequest request){
+        return weaponService.getWeaponsPage(request);
     }
 }

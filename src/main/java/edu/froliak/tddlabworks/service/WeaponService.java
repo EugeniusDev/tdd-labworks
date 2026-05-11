@@ -154,15 +154,41 @@ public class WeaponService {
         return new ApiResponse<>(new BaseMetaData(404, false, "Not found"));
     }
 
-    /////////////////   17.04 ////////////////////////////////
-    public ApiResponse<PaginationMetaData, Weapon> getWeaponsPage(WeaponPageRequest request){
+    public ApiResponse<PaginationMetaData, Weapon> getWeaponsPage(WeaponPageRequest request) {
 
         Pageable pageable = PageRequest.of(request.page(), request.size(),
                 Sort.by(Sort.Direction.DESC, "id"));
 
         Page<Weapon> page = weaponRepository.findAll(pageable);
-
         PaginationMetaData metaData = new PaginationMetaData();
+
+        if (page.getTotalElements() == 0) {
+            metaData.setCode(200);
+            metaData.setSuccess(true);
+            metaData.setErrorMessage("No weapons found");
+            return new ApiResponse<>(metaData, new ArrayList<>());
+        }
+
+        if (request.page() >= page.getTotalPages()) {
+            log.warn("Out of range");
+
+            int lastPageNumber = page.getTotalPages() - 1;
+            Pageable lastPageable = PageRequest.of(lastPageNumber, request.size(), Sort.by(Sort.Direction.DESC, "id"));
+            Page<Weapon> lastPage = weaponRepository.findAll(lastPageable);
+
+            metaData.setCode(404);
+            metaData.setSuccess(false);
+            metaData.setErrorMessage("Maximal page for the size is " + page.getTotalPages());
+            metaData.setNumber(lastPage.getNumber());
+            metaData.setSize(lastPage.getSize());
+            metaData.setTotalElements(lastPage.getTotalElements());
+            metaData.setTotalPages(lastPage.getTotalPages());
+            metaData.setFirst(lastPage.isFirst());
+            metaData.setLast(lastPage.isLast());
+
+            return new ApiResponse<>(metaData, lastPage.getContent());
+        }
+
         metaData.setCode(200);
         metaData.setSuccess(true);
         metaData.setErrorMessage(null);
@@ -172,18 +198,6 @@ public class WeaponService {
         metaData.setTotalPages(page.getTotalPages());
         metaData.setFirst(page.isFirst());
         metaData.setLast(page.isLast());
-        if (request.page() >= page.getTotalPages() && page.getTotalPages() > 0) {
-            metaData.setErrorMessage("Requested page is not in range");
-            return new ApiResponse<>(metaData, new ArrayList<>());
-        }
-
-
-        if (page.getTotalElements() == 0) {
-            metaData.setErrorMessage("No weapons found");
-            return new ApiResponse<>(metaData, new ArrayList<>());
-        }
-
-        metaData.setErrorMessage(null);
 
         return new ApiResponse<>(metaData, page.getContent());
     }
